@@ -182,7 +182,7 @@ func main() {
                 // Log receive
                 ctxLog := log.WithFields(log.Fields{
                         "source": addr.String(),
-                        "body":   string(b[:n]),
+                        //"body":   string(b[:n]),
                 })
                 ctxLog.Debugf("Recieved packet")
 

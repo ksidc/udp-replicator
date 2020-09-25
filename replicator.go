@@ -196,9 +196,12 @@ func main() {
 
                         if err != nil {
                                 ctxLog.Warn("Could not forward packet", err)
-                                targets = append(targets[:i], targets[i+1:]...)
-                                missing = append(missing, servers[i])
-                                servers = append(servers[:i], servers[i+1:]...)
+                                if strings.Contains(err.String(), "connection refused") {
+                                        targets = append(targets[:i], targets[i+1:]...)
+                                        missing = append(missing, servers[i])
+                                        servers = append(servers[:i], servers[i+1:]...)
+                                        go retry()
+                                }
                         } else {
                                 ctxLog.Debug("Wrote to target")
                         }

@@ -186,7 +186,7 @@ func main() {
                 ctxLog.Debugf("Recieved packet")
 
                 // Proxy
-                for _, target := range targets {
+                for i, target := range targets {
                         _, err := target.Write(b[:n])
 
                         // Log proxy

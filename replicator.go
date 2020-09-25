@@ -48,7 +48,6 @@ func retry() {
                                                 "addr":  conn.RemoteAddr(),
                                         }).Info("Forwarding target configured")
                                 }
-                                defer conn.Close()
                         }
 
                 }

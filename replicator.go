@@ -28,8 +28,8 @@ var (
 
 func retry() {
         /*
-        * When cannot dialup destination
-        * Bekei
+         * When cannot dialup destination
+         * Bekei
          */
         for {
                 for i, forward := range missing {
@@ -59,34 +59,28 @@ func retry() {
         }
 }
 
-func resolve() {
+func reconnect() {
         /*
-        * reresolve destination address
+        * Reconnect servers every 10 seconds
         * Bekei
          */
         for {
                 for i, forward := range servers {
                         addr, err := net.ResolveUDPAddr("udp", forward)
                         if err == nil {
-                                if addr.String() != targets[i].RemoteAddr().String() {
-                                        // Setup conn
-                                        conn, err := net.DialUDP("udp", nil, addr)
+                                // Setup conn
+                                conn, err := net.DialUDP("udp", nil, addr)
 
-                                        if err == nil {
-                                                log.WithFields(log.Fields{
-                                                        "total": len(targets),
-                                                        "before": addr,
-                                                        "to":     conn.RemoteAddr(),
-                                                }).Info("Forwarding target configured")
-                                                targets[i].Close()
-                                                targets[i] = conn
-                                        }
-                                        defer conn.Close()
-
+                                if err == nil {
+                                        var tmpconn *net.UDPConn = targets[i]
+                                        targets[i] = conn
+                                        tmpconn.Close()
                                 }
+                                defer conn.Close()
+
                         }
                 }
-                time.Sleep(time.Second * 5)
+                time.Sleep(time.Second * 10)
 
         }
 }
@@ -167,7 +161,7 @@ func main() {
         }
 
         go retry()
-        go resolve()
+        go reconnect()
 
         for {
                 // Read
@@ -186,7 +180,7 @@ func main() {
                 ctxLog.Debugf("Recieved packet")
 
                 // Proxy
-                for i, target := range targets {
+                for _, target := range targets {
                         _, err := target.Write(b[:n])
 
                         // Log proxy
@@ -196,12 +190,6 @@ func main() {
 
                         if err != nil {
                                 ctxLog.Warn("Could not forward packet", err)
-                                if strings.Contains(err.Error(), "connection refused") {
-                                        targets = append(targets[:i], targets[i+1:]...)
-                                        missing = append(missing, servers[i])
-                                        servers = append(servers[:i], servers[i+1:]...)
-                                        go retry()
-                                }
                         } else {
                                 ctxLog.Debug("Wrote to target")
                         }

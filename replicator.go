@@ -39,12 +39,14 @@ func retry() {
                                 // Setup conn
                                 conn, err := net.DialUDP("udp", nil, addr)
 
-                                if err != nil {
-                                        log.Fatalf("Could not DialUDP: %+v (%s)", addr, err)
-                                } else {
+                                if err == nil {
                                         targets = append(targets, conn)
                                         servers = append(servers, forward)
                                         missing = append(missing[:i], missing[i+1:]...)
+                                        log.WithFields(log.Fields{
+                                                "total": len(targets),
+                                                "addr":  target.RemoteAddr(),
+                                        }).Info("Forwarding target configured")
                                 }
                                 defer conn.Close()
                         }
@@ -73,6 +75,7 @@ func resolve() {
 
                                         if err == nil {
                                                 log.WithFields(log.Fields{
+                                                        "total": len(targets),
                                                         "before": addr,
                                                         "to":     conn.RemoteAddr(),
                                                 }).Info("Forwarding target configured")

@@ -80,7 +80,7 @@ func reconnect() {
 
                         }
                 }
-                time.Sleep(time.Second * 10)
+                time.Sleep(time.Second)
 
         }
 }

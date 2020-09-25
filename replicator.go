@@ -45,7 +45,7 @@ func retry() {
                                         missing = append(missing[:i], missing[i+1:]...)
                                         log.WithFields(log.Fields{
                                                 "total": len(targets),
-                                                "addr":  target.RemoteAddr(),
+                                                "addr":  conn.RemoteAddr(),
                                         }).Info("Forwarding target configured")
                                 }
                                 defer conn.Close()

@@ -124,7 +124,7 @@ func main() {
                 addr, err := net.ResolveUDPAddr("udp", forward)
                 if err != nil {
                         missing = append(missing, forward)
-                        log.Fatalf("Could not ResolveUDPAddr: %s (%s)", forward, err)
+                        log.Printf("Could not ResolveUDPAddr: %s (%s)\n", forward, err)
                 } else {
 
                         // Setup conn
@@ -132,7 +132,7 @@ func main() {
 
                         if err != nil {
                                 missing = append(missing, forward)
-                                log.Fatalf("Could not DialUDP: %+v (%s)", addr, err)
+                                log.Printf("Could not DialUDP: %+v (%s)\n", addr, err)
                         } else {
                                 targets = append(targets, conn)
                                 servers = append(servers, forward)
